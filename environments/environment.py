@@ -1,6 +1,6 @@
 import numbers
 
-from things.agents import Agent
+from agents.agents import Agent
 from things.thing import Thing, Obstacle, Wall
 from ipythonblocks.ipythonblocks import BlockGrid
 from utils import distance_squared, turn_heading
