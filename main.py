@@ -1,5 +1,5 @@
 
-from agents.agents import Agent
+from things.agents import Agent
 
 
 def test():
