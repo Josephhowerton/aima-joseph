@@ -1,8 +1,7 @@
 import copy
-
-from things.agents import Agent
-from things.thing import Thing
 import random
+from agents.agents import Agent
+from things.thing import Thing
 from environments.environment import Environment, GraphicEnvironment, Direction
 
 

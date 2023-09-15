@@ -21,31 +21,27 @@ class Agent(Thing):
         return False
 
 
-# --------------------------------------------------
-# Agent Programs
+# Simple Reflex Agent Program
 
-def rule_match(state, rules):
-    """Find the first rule that matches state."""
-    for rule in rules:
-        if rule.matches(state):
-            return rule
-
-
-def SimpleReflexAgentProgram(rules, interpret_rules):
+def SimpleReflexAgentProgram(rules, interpret_input):
     def program(percept):
-        state = interpret_rules(percept)
+        state = interpret_input(percept)
         rule = rule_match(state, rules)
         return rule.action
 
     return program
 
 
-def ModelBasedReflexAgentProgram(rules, update_state, transition_model, sensor_model):
+def ModelReflexAgentProgram(rules, update_state, transition_model, sensor_model):
     def program(percept):
         program.state = update_state(program.state, program.action, percept, transition_model, sensor_model)
         rule = rule_match(program.state, rules)
-        action = rule.action
-        return action
+        return rule.action
 
-    program.state = program.action = None
+    program.action = program.state = None
     return program
+
+def rule_match(state, rules):
+    for rule in rules:
+        if rule.matches(state):
+            return rule
