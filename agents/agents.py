@@ -1,4 +1,5 @@
 import collections
+import random
 
 from things.thing import Thing
 
@@ -21,8 +22,14 @@ class Agent(Thing):
         return False
 
 
-# Simple Reflex Agent Program
+def RandomAgentProgram(actions):
+    def program(percept):
+        return random.choice(actions)
 
+    return program
+
+
+# Simple Reflex Agent Program
 def SimpleReflexAgentProgram(rules, interpret_input):
     def program(percept):
         state = interpret_input(percept)
@@ -32,6 +39,7 @@ def SimpleReflexAgentProgram(rules, interpret_input):
     return program
 
 
+# Model Based Reflex Agent Program
 def ModelReflexAgentProgram(rules, update_state, transition_model, sensor_model):
     def program(percept):
         program.state = update_state(program.state, program.action, percept, transition_model, sensor_model)
@@ -41,6 +49,8 @@ def ModelReflexAgentProgram(rules, update_state, transition_model, sensor_model)
     program.action = program.state = None
     return program
 
+
+# Rule Match Algorithm
 def rule_match(state, rules):
     for rule in rules:
         if rule.matches(state):

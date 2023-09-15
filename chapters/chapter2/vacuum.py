@@ -34,10 +34,9 @@ class SimpleVacuumWorld(XYEnvironment):
         self.status = {LOC_A: State, LOC_B: State}
 
     def percept(self, agent):
-        return agent.location, self.status[agent.location]
+        return (agent.location, self.status[agent.location])
 
     def execute_action(self, agent, action):
-        sleep(1)
         if action == VacuumActions.CLEAN_DIRT and self.status[agent.location] == Dirty:
             print("cleaning")
             self.status[agent.location] = Clean
@@ -50,6 +49,8 @@ class SimpleVacuumWorld(XYEnvironment):
             print("turning left")
             agent.location = LOC_A
             agent.performance -= 1
+        elif action == VacuumActions.REST:
+            print("resting")
 
 
 def SimpleReflexVacuumAgent():
@@ -66,6 +67,8 @@ def SimpleReflexVacuumAgent():
 
 
 world = SimpleVacuumWorld()
+
+'''
 vacuum_agent = SimpleReflexVacuumAgent()
 
 print(world.status)
@@ -104,11 +107,11 @@ for performance in test:
     print("Configuration {} Performance: {}".format(configuration, performance))
 
 print("Average performance: {}".format(totalPerformance / configuration))
+'''
 
 
 # Adding internal state to reflex agent
 def ModelBasedReflexVacuum():
-
     # keep internal state of the world: I don't think this is a model based agent
     model = {LOC_A: None, LOC_B: None}
 
@@ -117,7 +120,7 @@ def ModelBasedReflexVacuum():
         model[location] = status
         if model[LOC_A] == model[LOC_B] == Clean:
             return VacuumActions.REST
-        elif model[location] == Dirty:
+        elif status == Dirty:
             return VacuumActions.CLEAN_DIRT
         elif location == LOC_A:
             return VacuumActions.TURN_RIGHT
@@ -127,28 +130,23 @@ def ModelBasedReflexVacuum():
     return Agent(program)
 
 
-world.delete_thing(vacuum_agent)
+# world.delete_thing(vacuum_agent)
 vacuum_agent = ModelBasedReflexVacuum()
-
-print(world.status)
-
-world.add_thing(vacuum_agent, random.choice([LOC_A, LOC_B]))
-
-world.run(5)
-
+world.add_thing(vacuum_agent, LOC_A)
 
 test = []
 world.status[LOC_A] = Dirty
+world.status[LOC_B] = Clean
 print("Configuration 1 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
 world.run(5)
 test.append(vacuum_agent.performance)
 
 vacuum_agent.performance = 0
+world.status[LOC_A] = Clean
 world.status[LOC_B] = Dirty
 print("Configuration 2 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
 world.run(5)
 test.append(vacuum_agent.performance)
-
 
 vacuum_agent.performance = 0
 world.status[LOC_A] = Dirty
