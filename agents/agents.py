@@ -23,7 +23,7 @@ class Agent(Thing):
 
 
 def RandomAgentProgram(actions):
-    def program(percept):
+    def program():
         return random.choice(actions)
 
     return program

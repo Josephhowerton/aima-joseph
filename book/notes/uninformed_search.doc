@@ -1,0 +1,15 @@
+Depth limited and iterative deepening.
+
+because depth first search is non-completing in infinite state spaces, we can assign an upper bound on the depth the search will execute in which case we can do something different. Depth-limited search is still incomplete, but it avoids traversing redundant paths forever. The time complexity of depth limited search is O(b^l ) where l is the upper limit or depth limit, and b is the branching factor.
+
+Iterative deepening search
+Combines good aspects of depth first search and breadth first search. In terms of depth first the amount of space required when a goal state is present is O(bd) and O(bd) when the state space is finite, and no solution exist. In terms of breadth first search is complete because it treats all nodes at depth l as terminal nodes and back up to the next deepest node and then expand its diameter if no solution is found. This assumes the state space is acyclic extra care is taken to prevent cyclical traversal. Iterative deepening is also optimal when all solutions have the same path cost. When a solution exist the time complexity is  O(b^d) and O(b^m) when no solution exists.
+
+The big negative impact of iterative deepening is that it repeats previous levels once it generates a new level. Therefore, space complexity is optimized at the cost of time complexity. However, the time complexity is still the same as breadth first search giving iterative deepening the advantage due to the space complexity. This fact makes iterative deepening the preferred method for large state spaces where the solution depth is unknown.
+
+Bidirectional Search
+Bidirectional search approaches the state space from the forward direction and the backward direction simultaneously. We can implement this using best first search making bidirectional.
+
+The key idea when creating the backwards directed algorithm is the understand that s’, which prior was the successive state is now the parent state. Further, there are now two separate frontiers and two separate set of nodes considered to be reached both of which require management. However, the time complexity is reduced to ?O(b?^(d"/" 2)+b^(d"/" 2)).
+
+If the evaluation function considers the path cost and the optimal path is C* then traversing in the backwards direction no path with c > C*/2 needs to be considered.

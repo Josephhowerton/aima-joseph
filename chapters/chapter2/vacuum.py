@@ -1,11 +1,14 @@
 import random
 
-from agents.agents import Agent
+from agents.agents import Agent, RandomAgentProgram
 from environments.environment import XYEnvironment
 from things.thing import Thing
 from time import sleep
 
-LOC_A, LOC_B = ((0, 0), (0, 1))
+LOC_A = (0, 0)
+LOC_B = (0, 1)
+REST = "REST"
+REST_VALUE = 3
 
 
 class VacuumActions:
@@ -32,25 +35,30 @@ class SimpleVacuumWorld(XYEnvironment):
     def __init__(self):
         super().__init__()
         self.status = {LOC_A: State, LOC_B: State}
-
+        self.add_walls()
+        
     def percept(self, agent):
-        return (agent.location, self.status[agent.location])
+        return agent.location, self.status[agent.location]
 
     def execute_action(self, agent, action):
-        if action == VacuumActions.CLEAN_DIRT and self.status[agent.location] == Dirty:
-            print("cleaning")
+        if action == VacuumActions.CLEAN_DIRT and self.status[agent.location] == Clean:
+            print("cleaning: -5")
+            agent.performance -= 5
+        elif action == VacuumActions.CLEAN_DIRT and self.status[agent.location] == Dirty:
+            print("cleaning: +10")
             self.status[agent.location] = Clean
             agent.performance += 10
         elif action == VacuumActions.TURN_RIGHT:
-            print("turning right")
+            print("TURN_RIGHT: -1")
             agent.location = LOC_B
             agent.performance -= 1
         elif action == VacuumActions.TURN_LEFT:
-            print("turning left")
+            print("TURN_LEFT: -1")
             agent.location = LOC_A
             agent.performance -= 1
         elif action == VacuumActions.REST:
-            print("resting")
+            print("REST")
+            sleep(1)
 
 
 def SimpleReflexVacuumAgent():
@@ -66,51 +74,8 @@ def SimpleReflexVacuumAgent():
     return Agent(program=program)
 
 
-world = SimpleVacuumWorld()
+# -------------------------------------------------------------------------------------------------
 
-'''
-vacuum_agent = SimpleReflexVacuumAgent()
-
-print(world.status)
-
-world.add_thing(vacuum_agent, random.choice([LOC_A, LOC_B]))
-
-world.run(5)
-
-
-test = []
-world.status[LOC_A] = Dirty
-print("Configuration 1 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
-test.append(vacuum_agent.performance)
-
-vacuum_agent.performance = 0
-world.status[LOC_B] = Dirty
-print("Configuration 2 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
-test.append(vacuum_agent.performance)
-
-
-vacuum_agent.performance = 0
-world.status[LOC_A] = Dirty
-world.status[LOC_B] = Dirty
-print("Configuration 3 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
-test.append(vacuum_agent.performance)
-
-configuration = 0
-totalPerformance = 0
-
-for performance in test:
-    configuration += 1
-    totalPerformance += performance
-    print("Configuration {} Performance: {}".format(configuration, performance))
-
-print("Average performance: {}".format(totalPerformance / configuration))
-'''
-
-
-# Adding internal state to reflex agent
 def ModelBasedReflexVacuum():
     # keep internal state of the world: I don't think this is a model based agent
     model = {LOC_A: None, LOC_B: None}
@@ -130,29 +95,43 @@ def ModelBasedReflexVacuum():
     return Agent(program)
 
 
-# world.delete_thing(vacuum_agent)
-vacuum_agent = ModelBasedReflexVacuum()
-world.add_thing(vacuum_agent, LOC_A)
-
 test = []
-world.status[LOC_A] = Dirty
-world.status[LOC_B] = Clean
-print("Configuration 1 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
+# -------------------------------------------------
+world_1 = SimpleVacuumWorld()
+vacuum_agent = ModelBasedReflexVacuum()
+world_1.add_thing(vacuum_agent, LOC_A)
+
+
+world_1.status[LOC_A] = Dirty
+world_1.status[LOC_B] = Clean
+print("Model Based Agent")
+print("Configuration 1 State: Location A Dirty, Location B Clean")
+world_1.run(5)
 test.append(vacuum_agent.performance)
 
-vacuum_agent.performance = 0
-world.status[LOC_A] = Clean
-world.status[LOC_B] = Dirty
-print("Configuration 2 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
-test.append(vacuum_agent.performance)
+# -----------------------------------------------------
+world_2 = SimpleVacuumWorld()
+vacuum_agent = ModelBasedReflexVacuum()
+world_2.add_thing(vacuum_agent, LOC_A)
 
 vacuum_agent.performance = 0
-world.status[LOC_A] = Dirty
-world.status[LOC_B] = Dirty
-print("Configuration 3 State: Location A {}, Location B {}".format(str(world.status[LOC_A]), str(world.status[LOC_B])))
-world.run(5)
+world_2.status[LOC_A] = Clean
+world_2.status[LOC_B] = Dirty
+print("Configuration 2 State: Location A Clean, Location B Dirty")
+world_2.run(5)
+test.append(vacuum_agent.performance)
+
+# ------------------------------------------------------
+world_3 = SimpleVacuumWorld()
+vacuum_agent = ModelBasedReflexVacuum()
+world_3.add_thing(vacuum_agent, LOC_A)
+
+vacuum_agent.performance = 0
+vacuum_agent.location = (0, 0)
+world_3.status[LOC_A] = Dirty
+world_3.status[LOC_B] = Dirty
+print("Configuration 3 State: Location A Dirty, Location B Dirty")
+world_3.run(5)
 test.append(vacuum_agent.performance)
 
 configuration = 0
